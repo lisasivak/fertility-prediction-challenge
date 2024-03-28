@@ -17,29 +17,35 @@
 library(dplyr) # as an example, not used here
 
 clean_df <- function(df, background_df = NULL){
-  # Preprocess the input dataframe to feed the model.
-  ### If no cleaning is done (e.g. if all the cleaning is done in a pipeline) leave only the "return df" command
-
-  # Parameters:
-  # df (dataframe): The input dataframe containing the raw data (e.g., from PreFer_train_data.csv or PreFer_fake_data.csv).
-  # background (dataframe): Optional input dataframe containing background data (e.g., from PreFer_train_background_data.csv or PreFer_fake_background_data.csv).
-
-  # Returns:
-  # data frame: The cleaned dataframe with only the necessary columns and processed variables.
-
-  ## This script contains a bare minimum working example
-  # Create new age variable
-  df$age <- 2024 - df$birthyear_bg
-
-  # Selecting variables for modelling
-
-  keepcols = c('nomem_encr', # ID variable required for predictions,
-               'age')        # newly created variable
+    # Process the input data to feed the model
   
-  ## Keeping data with variables selected
-  df <- df[ , keepcols ]
+    # select only people for whom the outcome is available
+    df <- df %>% filter(outcome_available == 1)
+  
+    # calculate age  
+    df$age <- 2024 - df$birthyear_bg
 
-  return(df)
+    
+    ## Select variables
+    keepcols = c('nomem_encr','partner_2020', 'age', 'oplmet_2020')
+    
+    df <- df %>% select(all_of(keepcols))
+
+    # imputing NA with mode (for factors) or median
+    my_mode <- function(x) {
+    x <-x[!is.na(x)]
+    ux <- unique(x)
+    tab <- tabulate(match(x, ux))
+    mode <- ux[tab == max(tab)]
+    ifelse(length(mode) > 1, sample(mode, 1), mode)
+    }
+    
+    df <- df %>% 
+      mutate(across(c(partner_2020, oplmet_2020), ~replace_na(., my_mode(.))), 
+             across(c(partner_2020, oplmet_2020), as.factor),
+             across(age, ~replace_na(., median(., na.rm=TRUE)))) 
+   
+   return(df)
 }
 
 predict_outcomes <- function(df, background_df = NULL, model_path = "./model.rds"){
