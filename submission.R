@@ -27,7 +27,7 @@ clean_df <- function(df, background_df = NULL){
 
     
     ## Select variables
-    keepcols = c('nomem_encr','partner_2020', 'age', 'oplmet_2020')
+    keepcols = c('nomem_encr','partner_2020', 'age')
     
     df <- df %>% select(all_of(keepcols))
 
@@ -41,8 +41,8 @@ clean_df <- function(df, background_df = NULL){
     }
     
     df <- df %>% 
-      mutate(across(c(partner_2020, oplmet_2020), ~replace_na(., my_mode(.))), 
-             across(c(partner_2020, oplmet_2020), as.factor),
+      mutate(across(c(partner_2020), ~replace_na(., my_mode(.))), 
+             across(c(partner_2020), as.factor),
              across(age, ~replace_na(., median(., na.rm=TRUE)))) 
    
    return(df)
