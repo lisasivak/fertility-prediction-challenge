@@ -20,7 +20,7 @@ train_save_model <- function(cleaned_df, outcome_df) {
   model_df <- merge(cleaned_df, outcome_df, by = "nomem_encr")
   
   # Logistic regression model
-  model <- glm(new_child ~ partner_2020 + age + oplmet_2020, family = "binomial", data = model_df)
+  model <- glm(new_child ~ partner_2020 + I(age^2) + oplmet_2020, family = "binomial", data = model_df)
   
   # Save the model
   saveRDS(model, "model.rds")
