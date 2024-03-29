@@ -8,14 +8,14 @@
 # should contain the nomem_encr column from the input data frame. The outcome
 # column should contain the predicted outcome for each nomem_encr. The outcome
 # should be 0 (no child) or 1 (having a child).
-# 
+#     
 # clean_df should be used to clean (preprocess) the data.
 # 
-# run.R can be used to test your submission.
+# run.R can be used to test your submission.    
 
 # List your packages here. Don't forget to update packages.R!
 library(dplyr) # as an example, not used here
-#
+##
 clean_df <- function(df, background_df = NULL){
     # Process the input data to feed the model
   
@@ -27,7 +27,7 @@ clean_df <- function(df, background_df = NULL){
 
     
     ## Select variables
-    keepcols = c('nomem_encr','partner_2020', 'age')
+    keepcols = c('nomem_encr','partner_2020', 'age', 'oplmet_2020')
     
     df <- df %>% select(all_of(keepcols))
 
@@ -41,8 +41,8 @@ clean_df <- function(df, background_df = NULL){
     }
     
     df <- df %>% 
-      mutate(across(c(partner_2020), ~replace_na(., my_mode(.))), 
-             across(c(partner_2020), as.factor),
+      mutate(across(c(partner_2020, oplmet_2020)), ~replace_na(., my_mode(.))), 
+             across(c(partner_2020, oplmet_2020)), as.factor),
              across(age, ~replace_na(., median(., na.rm=TRUE)))) 
    
    return(df)

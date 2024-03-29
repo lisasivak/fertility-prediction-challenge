@@ -14,41 +14,6 @@ from sklearn.linear_model import LogisticRegression
 import joblib
 
 
-def clean_df(df, background_df=None):
-    """
-    Preprocess the input dataframe to feed the model.
-    # If no cleaning is done (e.g. if all the cleaning is done in a pipeline) leave only the "return df" command
-
-    Parameters:
-    df (pd.DataFrame): The input dataframe containing the raw data (e.g., from PreFer_train_data.csv or PreFer_fake_data.csv).
-    background (pd.DataFrame): Optional input dataframe containing background data (e.g., from PreFer_train_background_data.csv or PreFer_fake_background_data.csv).
-
-    Returns:
-    pd.DataFrame: The cleaned dataframe with only the necessary columns and processed variables.
-    """
-
-    ## This script contains a bare minimum working example
-    # Create new variable with age
-    df["age"] = 2024 - df["birthyear_bg"]
-
-    # Imputing missing values in age with the mean
-    df["age"] = df["age"].fillna(df["age"].mean())
-    
-    # Imputing missing values in education (oplmet_2020) with the mode
-    df["oplmet_2020"] = df["oplmet_2020"].fillna(df["oplmet_2020"].mode())
-
-    # Selecting variables for modelling
-    keepcols = [
-        "nomem_encr",  # ID variable required for predictions,
-        "age"          # newly created variable
-    ] 
-
-    # Keeping data with variables selected
-    df = df[keepcols]
-
-    return df
-
-
 def train_save_model(cleaned_df, outcome_df):
     """
     Trains a model using the cleaned dataframe and saves the model to a file.
@@ -72,7 +37,7 @@ def train_save_model(cleaned_df, outcome_df):
     model = LogisticRegression()
 
     # Fit the model
-    model.fit(model_df[['age', 'oplmet_2020']], model_df['new_child'])
+    model.fit(model_df[['age', 'gender_bg']], model_df['new_child'])
 
     # Save the model
     joblib.dump(model, "model.joblib")
