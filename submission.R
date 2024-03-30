@@ -14,7 +14,7 @@
 # run.R can be used to test your submission.    
 
 # List your packages here. Don't forget to update packages.R!
-library(dplyr) # as an example, not used here
+library(caret) 
 ##
 clean_df <- function(df, background_df = NULL){
     # Process the input data to feed the model
