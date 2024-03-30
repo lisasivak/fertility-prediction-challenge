@@ -19,33 +19,21 @@ library(dplyr) # as an example, not used here
 clean_df <- function(df, background_df = NULL){
     # Process the input data to feed the model
   
-    # select only people for whom the outcome is available
-    df <- df %>% filter(outcome_available == 1)
-  
-    # calculate age  
+    # calculate age   
     df$age <- 2024 - df$birthyear_bg
 
-    
-    ## Select variables
-    keepcols = c('nomem_encr','partner_2020', 'age', 'oplmet_2020')
-    
-    df <- df %>% select(all_of(keepcols))
+    # Selecting variables for modelling
 
-    # imputing NA with mode (for factors) or median
-    my_mode <- function(x) {
-    x <-x[!is.na(x)]
-    ux <- unique(x)
-    tab <- tabulate(match(x, ux))
-    mode <- ux[tab == max(tab)]
-    ifelse(length(mode) > 1, sample(mode, 1), mode)
-    }
+    keepcols = c('nomem_encr', # ID variable required for predictions,
+               'age', 'gender_bg')  # <-------- ADDED VARIABLE 'gender_bg'
+  
+    # Keeping data with variables selected
+    df <- df[ , keepcols ]
     
-    df <- df %>% 
-      mutate(across(c(partner_2020, oplmet_2020), ~replace_na(., my_mode(.))), 
-             across(c(partner_2020, oplmet_2020), as.factor),
-             across(age, ~replace_na(., median(., na.rm=TRUE)))) 
-   
-   return(df)
+    # turning gender into factor
+    df$gender_bg<- as.factor(df$gender_bg) # <-------- ADDED THIS
+
+    return(df)
 }
 
 predict_outcomes <- function(df, background_df = NULL, model_path = "./model.rds"){
