@@ -1,3 +1,29 @@
+---
+title: "training_fertility intentions"
+output: html_document
+date: "2024-03-28"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(data.table)
+library(tidytable)
+
+library(caret)
+```
+
+
+```{r}
+
+fake <- read.csv("PreFer_fake_data.csv")
+
+fake_background <- read.csv("PreFer_fake_background_data.csv")
+
+
+
+######for checking numbers
+
 library(tidyverse)
 
 clean_df <- function(df, background_df = NULL){
@@ -51,3 +77,5 @@ predict_outcomes <- function(df, background_df = NULL, model_path = "./model.rds
   
   return( df_predict )
 }
+
+```
