@@ -1,5 +1,5 @@
 library(tidyverse)
-#
+##
 clean_df <- function(df, background_df = NULL){
   
   # creating average income for all respondents
