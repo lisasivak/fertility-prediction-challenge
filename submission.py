@@ -52,6 +52,8 @@ def clean_df(df, background_df=None):
     # Keeping data with variables selected
     df = df[keepcols]
 
+    external = pd.read_csv('fake_external_data.csv')
+
     return df
 
 
