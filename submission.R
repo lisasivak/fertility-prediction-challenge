@@ -32,6 +32,7 @@ clean_df <- function(df, background_df = NULL){
     mutate(
       birthyear_bg = ifelse(is.na(birthyear_bg), 
                             mean(birthyear_bg, na.rm = TRUE), birthyear_bg),
+      age = 2020 - birthyear_bg,
       gender_bg = ifelse(is.na(gender_bg),
                          mode(gender_bg), gender_bg),
       oplmet_2020 = ifelse(is.na(oplmet_2020),
@@ -46,20 +47,25 @@ clean_df <- function(df, background_df = NULL){
     # standardise continuous variable, create factor for categorical variables
     # needed for glmnet
     mutate(
-      birthyear_bg = as.numeric(scale(birthyear_bg)), # z-scores, as.numeric to remove attributes
+      age_st = as.numeric(scale(age)), # z-scores, as.numeric to remove attributes
       gender_bg = factor(gender_bg),
       oplmet_2020 = factor(oplmet_2020),
       cf20m180 = factor(cf20m180),
       cf20m024 = factor(cf20m024)
     )
   
-
-  ##################
-  # updating factor levels to keep all columns in the data when the variable will be turned into dummy 
-  # because some categories are missing now in the train data which are present in the fake (and likely holdout) data -- see description.md
+  
+  # updating factor levels to keep all columns in the data when the variable will be turned into dummy - even if some categories are missing
   levels(df$cf20m180) <- c("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10","99","999")  
-  ####################
-
+  
+  # add fake external data to test
+  external <- read.csv('fake_external_data.csv')
+  
+  df <- left_join(df, external, by = 'age')
+  
+  # remove additional columns for age
+  df <- df %>% select(-c(age, birthyear_bg))
+  
   # turn factors into dummy variables, required for glmnet
   df <- model.matrix(~ ., df)
   
