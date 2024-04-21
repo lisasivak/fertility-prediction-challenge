@@ -9,3 +9,6 @@ If we select only cases in the training data for which the outcome is available,
 These categories however appear in the full train set - and are likely to appear in the holdout data, in which case it will introduce errors.
 
 In this example we create additional factor levels to deal with this problem.
+
+
+UPD: plus test adding external data using fake external data
